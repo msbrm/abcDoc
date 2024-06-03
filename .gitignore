@@ -1,0 +1,10 @@
+out
+node_modules
+test.py
+test_python.py
+test_*
+.vscode-test/
+.vscode/tags
+.vscode/settings.json
+*.psd
+todo
