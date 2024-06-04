@@ -1,0 +1,17 @@
+head:
+  head-head: '"""'
+  head-body:
+  - '${FileName}\n'
+  - '${Description}\n'
+  - 'Author: ${Git.UserName} ${Git.Email}'
+  - 'CreateTime: ${CreateTime}'
+  - 'LastModifier: ${LastModifier}'
+  - 'lastModifyTime: ${lastModifyTime}'
+  head-tail: '"""'
+  head1: {
+    a: 1,
+    b: 2
+  }
+  head2:
+    c: 3
+    d: 4

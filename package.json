@@ -13,6 +13,32 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Language Settings",
+      "properties": {
+        "abcDoc.head": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable for FileHead"
+        },
+        "abcDoc.languageSettings.python": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable for Python"
+        },
+        "abcDoc.languageSettings.java": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable for Java"
+        },
+        "abcDoc.languageSettings.cpp": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable for C++"
+        }
+      }
+    },
     "languages": [
       {
         "id": "python",
@@ -51,6 +77,10 @@
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
     "eslint": "^8.57.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "@types/js-yaml": "^4.0.5"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
   }
 }
