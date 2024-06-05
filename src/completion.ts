@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 
+import { YamlConfigManager } from './yamlConfigManager';
+
 class DocstringCompletionItemProvider implements vscode.CompletionItemProvider {
     provideCompletionItems(
         document: vscode.TextDocument,
@@ -8,10 +10,9 @@ class DocstringCompletionItemProvider implements vscode.CompletionItemProvider {
         context: vscode.CompletionContext
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
         const linePrefix = document.lineAt(position).text.substring(0, position.character);
-
+        console.log(position.character);
         if (linePrefix.endsWith("'''")) {
-            // 创建注释文档补全项
-            const completionItem = new vscode.CompletionItem('"""', vscode.CompletionItemKind.Snippet);
+            const completionItem = new vscode.CompletionItem('abc-doc', vscode.CompletionItemKind.Snippet);
             completionItem.insertText = new vscode.SnippetString(
                 `"""\n` +
                 `Description.\n` +
@@ -26,7 +27,7 @@ class DocstringCompletionItemProvider implements vscode.CompletionItemProvider {
             );
 
             // 设置补全项的详细描述
-            completionItem.detail = 'Inserts a docstring template';
+            // completionItem.detail = 'Inserts a docstring template';
 
             // 返回补全项列表
             return [completionItem];
@@ -37,7 +38,19 @@ class DocstringCompletionItemProvider implements vscode.CompletionItemProvider {
     }
 }
 
-// class Provider
+class Provider {
+    public readonly languageId: string;
+    public yamlConfigManager: YamlConfigManager;
+
+    constructor(languageId: string) {
+        this.languageId = languageId;
+        this.yamlConfigManager = new YamlConfigManager(`./config/template/${languageId}.yaml`);
+    }
+
+    getLanguageId(): string {
+        return this.languageId;
+    }
+}
 
 let provider = vscode.languages.registerCompletionItemProvider(
     { scheme: 'file', language: 'python' },
@@ -45,6 +58,4 @@ let provider = vscode.languages.registerCompletionItemProvider(
     "'"
 );
 
-
-
-// export { Provider };
+export { provider };

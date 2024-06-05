@@ -42,23 +42,25 @@
     "languages": [
       {
         "id": "python",
-        "extensions": [
-          ".py"
-        ],
-        "aliases": [
-          "Python",
-          "python"
-        ],
+        "extensions": [".py"],
+        "aliases": ["Python", "python"],
         "configuration": "./language-configuration.json"
-      }
+    },
+    {
+        "id": "cpp",
+        "extensions": [".cpp", ".h", ".hpp"],
+        "aliases": ["C++", "cpp"],
+        "configuration": "./language-configuration.json"
+    },
+    {
+        "id": "java",
+        "extensions": [".java"],
+        "aliases": ["Java", "java"],
+        "configuration": "./language-configuration.json"
+    }
     ],
     "completionItems": [],
-    "commands": [
-      {
-        "command": "abcDoc.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    "commands": []
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

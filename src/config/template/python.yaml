@@ -1,4 +1,17 @@
-class:
+head:
+  triggerCharacters: 'head'
+  head-head: '"""'
+  head-body:
+  - '${FileName}\n'
+  - '${Description}\n'
+  - 'Author: ${Git.UserName} ${Git.Email}'
+  - 'CreateTime: ${CreateTime}'
+  - 'LastModifier: ${LastModifier}'
+  - 'lastModifyTime: ${lastModifyTime}'
+  head-tail: '"""'
 
-function:
+
+# class:
+
+# function:
 
