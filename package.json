@@ -17,11 +17,6 @@
       "type": "object",
       "title": "Language Settings",
       "properties": {
-        "abcDoc.head": {
-            "type": "boolean",
-            "default": true,
-            "description": "Enable for FileHead"
-        },
         "abcDoc.languageSettings.python": {
             "type": "boolean",
             "default": true,

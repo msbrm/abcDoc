@@ -8,39 +8,32 @@ export class YamlConfigManager {
         this.filePath = filePath;
     }
 
-    async readConfig(filePath?: string): Promise<Record<string, any>> {
+    readConfig(filePath?: string): Record<string, any> {
         const pathToRead = filePath || this.filePath;
-        return new Promise((resolve, reject) => {
-            fs.readFile(pathToRead, 'utf8', (err, data) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                try {
-                    const config = yaml.load(data) as Record<string, any>;
-                    resolve(config);
-                } catch (e) {
-                    reject(e);
-                }
-            });
-        });
+        try {
+            const data = fs.readFileSync(pathToRead, 'utf8');
+            const config = yaml.load(data) as Record<string, any>;
+            return config;
+        } catch (err) {
+            if (err instanceof Error) {
+                throw new Error(`Error reading config file: ${err.message}`);
+            } else {
+                throw new Error('Unknown error reading config file');
+            }
+        }
     }
 
-    async writeConfig(config: Record<string, any>, filePath?: string): Promise<void> {
+    writeConfig(config: Record<string, any>, filePath?: string): void {
         const pathToWrite = filePath || this.filePath;
-        return new Promise((resolve, reject) => {
-            try {
-                const yamlStr = yaml.dump(config);
-                fs.writeFile(pathToWrite, yamlStr, 'utf8', (err) => {
-                    if (err) {
-                        reject(err);
-                        return;
-                    }
-                    resolve();
-                });
-            } catch (e) {
-                reject(e);
+        try {
+            const yamlStr = yaml.dump(config);
+            fs.writeFileSync(pathToWrite, yamlStr, 'utf8');
+        } catch (err) {
+            if (err instanceof Error) {
+                throw new Error(`Error writing config file: ${err.message}`);
+            } else {
+                throw new Error('Unknown error writing config file');
             }
-        });
+        }
     }
 }

@@ -3,6 +3,14 @@ import * as vscode from 'vscode';
 import { YamlConfigManager } from './yamlConfigManager';
 
 class DocstringCompletionItemProvider implements vscode.CompletionItemProvider {
+    private languageId: string;
+    private insertText: string[];
+
+    constructor(languageId: string, insertText: string[]) {
+        this.languageId = languageId;
+        this.insertText = insertText;
+    }
+
     provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -42,20 +50,32 @@ class Provider {
     public readonly languageId: string;
     public yamlConfigManager: YamlConfigManager;
 
-    constructor(languageId: string) {
+    constructor(languageId: string, extensionPath: string) {
         this.languageId = languageId;
-        this.yamlConfigManager = new YamlConfigManager(`./config/template/${languageId}.yaml`);
+        this.yamlConfigManager = new YamlConfigManager(
+            `${extensionPath}/src/config/template/${languageId}.yaml`
+        );
     }
 
     getLanguageId(): string {
         return this.languageId;
     }
+
+    getProvider(filePath?: string) {
+        let providerList = [];
+        let config = this.yamlConfigManager.readConfig(filePath);
+
+        for (const [key, value] of Object.entries(config)) {
+            console.log(`${key}: ${value}`);
+        }
+
+        let provider = vscode.languages.registerCompletionItemProvider(
+            { scheme: 'file', language: this.languageId },
+            new DocstringCompletionItemProvider(this.languageId, config),
+            "'"
+        );
+        return [provider];
+    }
 }
 
-let provider = vscode.languages.registerCompletionItemProvider(
-    { scheme: 'file', language: 'python' },
-    new DocstringCompletionItemProvider(),
-    "'"
-);
-
-export { provider };
+export { Provider };
