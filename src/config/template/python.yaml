@@ -1,36 +1,31 @@
-head:
-  triggerCharacters: 'head'
-  body:
-  - '"""'
-  - '${FileName}\n'
-  - '${Description}\n'
-  - 'Author: ${Git.UserName} ${Git.Email}'
-  - 'CreateTime: ${CreateTime}'
-  - 'LastModifier: ${LastModifier}'
-  - 'lastModifyTime: ${lastModifyTime}'
-  - '"""'
+headTriggerCharacters: 'd'
 
+docTriggerCharacters: "'"
+
+head:
+- '"""'
+- 'FileName:    ${FileName}'
+- 'Description: ${1:Description}'
+- 'Author:      ${Git.UserName} ${Git.Email}'
+- 'CreateTime:  ${CreateTime}'
+- '"""'
 
 class:
-  triggerCharacters: "'"
-  body:
-  - 'class"""'
-  - 'class${FileName}\n'
-  - 'class${Description}\n'
-  - 'classAuthor: ${Git.UserName} ${Git.Email}'
-  - 'classCreateTime: ${CreateTime}'
-  - 'classLastModifier: ${LastModifier}'
-  - 'classlastModifyTime: ${lastModifyTime}'
-  - 'class"""'
+- 'class"""'
+- 'class${FileName}\n'
+- 'class${Description}\n'
+- 'classAuthor: ${Git.UserName} ${Git.Email}'
+- 'classCreateTime: ${CreateTime}'
+- 'classLastModifier: ${LastModifier}'
+- 'classlastModifyTime: ${lastModifyTime}'
+- 'class"""'
 
 function:
-  triggerCharacters: "'"
-  body:
-  - 'function"""'
-  - 'function${FileName}\n'
-  - 'function${Description}\n'
-  - 'functionAuthor: ${Git.UserName} ${Git.Email}'
-  - 'functionCreateTime: ${CreateTime}'
-  - 'functionLastModifier: ${LastModifier}'
-  - 'functionlastModifyTime: ${lastModifyTime}'
-  - 'function"""'
+- 'function"""'
+- 'function${FileName}\n'
+- 'function${Description}\n'
+- 'functionAuthor: ${Git.UserName} ${Git.Email}'
+- 'functionCreateTime: ${CreateTime}'
+- 'functionLastModifier: ${LastModifier}'
+- 'functionlastModifyTime: ${lastModifyTime}'
+- 'function"""'

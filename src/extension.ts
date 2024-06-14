@@ -20,13 +20,12 @@ function getLanguageSettings() {
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Extension [abcDoc] is now active!');
-	const extensionPath = context.extensionPath;
 
 	// Instantiate a `Provider` object for each programming language
 	// based on the result of the `getLanguageSettings` method
 	// obtain the auto-completion listener and register it
     for (const language of getLanguageSettings()) {
-		let provider = new Provider(language, extensionPath);
+		let provider = new Provider(language, context);
 		for(const i of provider.getProvider()) {
 			context.subscriptions.push(i);
 		}
