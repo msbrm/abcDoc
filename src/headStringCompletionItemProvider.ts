@@ -15,6 +15,7 @@ export class HeadstringCompletionItemProvider implements vscode.CompletionItemPr
 
             if (item.includes('${Git.UserName}')) {
                 try {
+                    throw new Error("Git.UserName");
                     this.user = getGitConfigValueSync('user.name');
                 } catch (error) {
                     console.error('Failed to get Git user information:', error);
@@ -26,6 +27,7 @@ export class HeadstringCompletionItemProvider implements vscode.CompletionItemPr
 
             if (item.includes('${Git.Email}')) {
                 try {
+                    throw new Error("Git.Email");
                     this.email = getGitConfigValueSync('user.email');
                 } catch (error) {
                     console.error('Failed to get Git user information:', error);
@@ -61,15 +63,6 @@ export class HeadstringCompletionItemProvider implements vscode.CompletionItemPr
                 vscode.window.showErrorMessage(`get file info error: ${err}`);
             });
             const completionItem = new vscode.CompletionItem('abc-head', vscode.CompletionItemKind.Snippet);
-            // completionItem.insertText = new vscode.SnippetString(
-            //     this.insertText.map(
-            //         str => str
-            //         .replace('${FileName}', fileName)
-            //         .replace('${CreateTime}', creationTime)
-            //         .replace('${Git.UserName}', this.user || '${2}')
-            //         .replace('${Git.Email}', this.email || '${3}')
-            //     ).join('')
-            // );
             let insertText = new vscode.SnippetString();
             this.insertText.forEach((item) => {
                 insertText.appendText(
@@ -79,7 +72,6 @@ export class HeadstringCompletionItemProvider implements vscode.CompletionItemPr
                     .replace('${Git.Email}', this.email || '${3}') + `\n`
                 );
             });
-            // insertText.appendPlaceholder('', 9);
             completionItem.insertText = insertText;
 
             return [completionItem];

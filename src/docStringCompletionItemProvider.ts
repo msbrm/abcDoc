@@ -18,7 +18,7 @@ export class DocstringCompletionItemProvider implements vscode.CompletionItemPro
         const linePrefix = document.lineAt(position).text.substring(0, position.character);
         console.log(position.character);
         if (linePrefix.endsWith("'''")) {
-            const completionItem = new vscode.CompletionItem('abc-head', vscode.CompletionItemKind.Snippet);
+            const completionItem = new vscode.CompletionItem('abc-doc', vscode.CompletionItemKind.Snippet);
             completionItem.insertText = new vscode.SnippetString(
                 `"""\n` +
                 `Description.\n` +
