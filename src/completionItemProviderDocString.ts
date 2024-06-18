@@ -1,12 +1,27 @@
 import * as vscode from 'vscode';
+import { FixCompletionItem } from './completionItem';
+import { PythonHandler } from './completionItem';
+import { CppHandler } from './completionItem';
+import { JavaHandler } from './completionItem';
 
 export class CompletionItemProviderDocstring implements vscode.CompletionItemProvider {
-    private languageId: string;
-    private config;
+    private fixCompletionItem: FixCompletionItem | undefined;
 
     constructor(languageId: string, config: any) {
-        this.languageId = languageId;
-        this.config = config;
+        switch (languageId) {
+            case 'python':
+                this.fixCompletionItem = new PythonHandler(languageId, config);
+                break;
+            case 'cpp':
+                this.fixCompletionItem = new CppHandler(languageId, config);
+                break;
+            case 'java':
+                this.fixCompletionItem = new JavaHandler(languageId, config);
+                break;
+            default:
+                this.fixCompletionItem = undefined;
+                break;
+        }
     }
 
     provideCompletionItems(
@@ -15,24 +30,9 @@ export class CompletionItemProviderDocstring implements vscode.CompletionItemPro
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
-        const linePrefix = document.lineAt(position).text.substring(0, position.character);
-        console.log(position.character);
-        if (linePrefix.endsWith("'''")) {
-            const completionItem = new vscode.CompletionItem('abc-doc', vscode.CompletionItemKind.Snippet);
-            completionItem.insertText = new vscode.SnippetString(
-                `"""\n` +
-                `Description.\n` +
-                `"""\n`
-            );
-
-            // 设置补全项的详细描述
-            // completionItem.detail = 'Inserts a docstring template';
-
-            // 返回补全项列表
-            return [completionItem];
+        if (this.fixCompletionItem) {
+            return this.fixCompletionItem.getCompletionItem(document, position, token, context);
         }
-
-        // 如果不是注释开始部分，则返回空的补全项列表
         return [];
     }
 }

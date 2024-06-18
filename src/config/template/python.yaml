@@ -11,21 +11,26 @@ head:
 - '"""'
 
 class:
-- 'class"""'
-- 'class${FileName}\n'
-- 'class${Description}\n'
-- 'classAuthor: ${Git.UserName} ${Git.Email}'
-- 'classCreateTime: ${CreateTime}'
-- 'classLastModifier: ${LastModifier}'
-- 'classlastModifyTime: ${lastModifyTime}'
-- 'class"""'
+  style: numpy
 
-function:
-- 'function"""'
-- 'function${FileName}\n'
-- 'function${Description}\n'
-- 'functionAuthor: ${Git.UserName} ${Git.Email}'
-- 'functionCreateTime: ${CreateTime}'
-- 'functionLastModifier: ${LastModifier}'
-- 'functionlastModifyTime: ${lastModifyTime}'
-- 'function"""'
+def:
+  style: numpy
+
+# class:
+# - '"""'
+# - '${Description}'
+# - ''
+# - 'Attributes:'
+# - '[ ${name} (${type}): ${Description}]'
+# - '"""'
+
+# def:
+# - '"""'
+# - '${Description}'
+# - ''
+# - 'Args:'
+# - '[${name} (${type}): ${Description}]'
+# - ''
+# - 'Returns:'
+# - '[(${type}): ${Description}]'
+# - '"""'

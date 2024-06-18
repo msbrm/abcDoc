@@ -30,7 +30,7 @@ class Provider {
         if ('headTriggerCharacters' in config) {
             let providerHead = vscode.languages.registerCompletionItemProvider(
                 { scheme: 'file', language: this.languageId },
-                new CompletionItemProviderHeadstring(config.head),
+                new CompletionItemProviderHeadstring(this.languageId, config.head),
                 config.headTriggerCharacters
             );
             providerList.push(providerHead);

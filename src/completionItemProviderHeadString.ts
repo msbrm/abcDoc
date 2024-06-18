@@ -2,11 +2,13 @@ import * as vscode from 'vscode';
 import * as cp from 'child_process';
 
 export class CompletionItemProviderHeadstring implements vscode.CompletionItemProvider {
+    private languageId: string;
     private insertText: string[];
     private user: string = '';
     private email: string = '';
 
-    constructor(insertText: string[]) {
+    constructor(languageId: string, insertText: string[]) {
+        this.languageId = languageId;
         this.insertText = insertText;
         this.insertText.forEach(item => {
             if (item.includes('${Git.UserName}')) {
@@ -41,7 +43,7 @@ export class CompletionItemProviderHeadstring implements vscode.CompletionItemPr
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
-        console.log('head');
+        console.debug('head');
         if (position.line === 0 && position.character === 4 && document.lineAt(position).text === 'head') {
             const editor = vscode.window.activeTextEditor;
             if (!editor) {
@@ -57,10 +59,9 @@ export class CompletionItemProviderHeadstring implements vscode.CompletionItemPr
                 // zh-CN: `YYYY/MM/DD HH:MM:SS`
                 // en-GB: `DD/MM/YYYY, HH:MM:SS`
                 const creationTime = new Date(stats.ctime).toLocaleString('zh-CN');
-                vscode.window.showInformationMessage(`file name: ${fileName}\ncreate time: ${creationTime}`);
-
-                const completionItem = new vscode.CompletionItem('abc-head', vscode.CompletionItemKind.Snippet);
+                const completionItem = new vscode.CompletionItem(`abc-head: ${this.languageId}`, vscode.CompletionItemKind.Snippet);
                 let insertText = new vscode.SnippetString();
+
                 for (const item of this.insertText) {
                     // FileName
                     if (item.includes('${FileName}')) {
@@ -95,7 +96,6 @@ export class CompletionItemProviderHeadstring implements vscode.CompletionItemPr
                 }
                 completionItem.insertText = insertText;
 
-                vscode.window.showInformationMessage(`file name: ${fileName}\ncreate time: ${creationTime}`);
                 return [completionItem];
             }).then(undefined, err => {
                 vscode.window.showErrorMessage(`get file info error: ${err}`);
@@ -116,5 +116,3 @@ function getGitConfigValueSync(configKey: string): string {
         throw new Error(`Failed to get Git config for ${configKey}`);
     }
 }
-
-export function deactivate() {}
