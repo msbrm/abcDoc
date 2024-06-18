@@ -18,41 +18,58 @@
       "title": "Language Settings",
       "properties": {
         "abcDoc.languageSettings.python": {
-            "type": "boolean",
-            "default": true,
-            "description": "Enable for Python"
+          "type": "boolean",
+          "default": true,
+          "description": "Enable for Python"
         },
         "abcDoc.languageSettings.java": {
-            "type": "boolean",
-            "default": false,
-            "description": "Enable for Java"
+          "type": "boolean",
+          "default": false,
+          "description": "Enable for Java"
         },
         "abcDoc.languageSettings.cpp": {
-            "type": "boolean",
-            "default": false,
-            "description": "Enable for C++"
+          "type": "boolean",
+          "default": false,
+          "description": "Enable for C++"
         }
       }
     },
     "languages": [
       {
         "id": "python",
-        "extensions": [".py"],
-        "aliases": ["Python", "python"],
+        "extensions": [
+          ".py"
+        ],
+        "aliases": [
+          "Python",
+          "python"
+        ],
         "configuration": "./language-configuration.json"
-    },
-    {
+      },
+      {
         "id": "cpp",
-        "extensions": [".cpp", ".h", ".hpp"],
-        "aliases": ["C++", "cpp"],
+        "extensions": [
+          ".cpp",
+          ".h",
+          ".hpp"
+        ],
+        "aliases": [
+          "C++",
+          "cpp"
+        ],
         "configuration": "./language-configuration.json"
-    },
-    {
+      },
+      {
         "id": "java",
-        "extensions": [".java"],
-        "aliases": ["Java", "java"],
+        "extensions": [
+          ".java"
+        ],
+        "aliases": [
+          "Java",
+          "java"
+        ],
         "configuration": "./language-configuration.json"
-    }
+      }
     ],
     "completionItems": [],
     "commands": []
@@ -66,6 +83,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.5",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@types/vscode": "^1.89.0",
@@ -74,10 +92,11 @@
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
     "eslint": "^8.57.0",
-    "typescript": "^5.4.5",
-    "@types/js-yaml": "^4.0.5"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "tree-sitter": "^0.21.1",
+    "tree-sitter-python": "^0.21.0"
   }
 }

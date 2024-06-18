@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import Parser from 'tree-sitter';
+import TreeSitterPython from 'tree-sitter-python';
 
 
 function lineValidation(
@@ -38,7 +40,7 @@ function getLeadingWhitespace(line: string): string {
 }
 
 
-export abstract class FixCompletionItem{
+export abstract class FixCompletionItem {
     public languageId: string;
     public config;
 
@@ -58,9 +60,13 @@ export abstract class FixCompletionItem{
 
 
 export class PythonHandler extends FixCompletionItem {
+    private parser;
 
     constructor(languageId: string, config: any) {
         super(languageId, config);
+        this.parser = new Parser();
+        this.parser.setLanguage(TreeSitterPython);
+
     }
 
     getCompletionItem(
@@ -84,17 +90,25 @@ export class PythonHandler extends FixCompletionItem {
                 let insertText = new vscode.SnippetString();
 
                 let lineIdx = position.line;
-                tmpCodeBlock.push(previousLine);
                 let needNextLine: boolean = false;
                 let bracketStack: string[] = [];
                 let strFlag: string = '';
-                while (++lineIdx <= document.lineCount) {
+                tmpCodeBlock.push(previousLine);
+                const {
+                    needNextLine: tmpNeedNextLine,
+                    bracketStack: tmpBracketStack,
+                    strFlag: tmpStrFlag
+                } = lineValidation(previousLine.trim(), bracketStack, strFlag);
+                needNextLine = tmpNeedNextLine;
+                bracketStack = tmpBracketStack;
+                strFlag = tmpStrFlag;
+                while (++lineIdx < document.lineCount) {
                     const tmpLine = document.lineAt(lineIdx).text;
                     if (tmpLine.trim().length === 0) {
                         continue;
                     }
 
-                    if (getLeadingWhitespace(tmpLine).length >= leadingWhitespaceLength || needNextLine) {
+                    if (getLeadingWhitespace(tmpLine).length > leadingWhitespaceLength || needNextLine) {
                         tmpCodeBlock.push(tmpLine);
                         const {
                             needNextLine: tmpNeedNextLine,
@@ -108,7 +122,26 @@ export class PythonHandler extends FixCompletionItem {
                         break;
                     }
                 }
-                console.log(tmpCodeBlock);
+
+                let classProperties: { name: string, type: string }[] = [];
+                const tree = this.parser.parse(tmpCodeBlock.join('\n'));
+                const node = tree.rootNode.child(0);
+                console.log(node);
+                node?.children.forEach((classBodyChildNode) => {
+                    if (classBodyChildNode.type === 'class_element') {
+                        if (classBodyChildNode.firstChild?.type === 'property_declaration') {
+                            const propertyDeclarationNode = classBodyChildNode.firstChild;
+                            if (propertyDeclarationNode?.type === 'property_declaration') {
+                                const identifierNode = propertyDeclarationNode.childNamed('identifier');
+                                const propertyName = identifierNode ? identifierNode.text : '';
+                                const propertyTypeNode = propertyDeclarationNode.nextSibling;
+                                const propertyType = propertyTypeNode ? propertyTypeNode.text.trim() : '';
+                                classProperties.push({ name: propertyName, type: propertyType });
+                            }
+                        }
+                    }
+                });
+
                 for (const item of insertConfig) {
                     // insertText.appendText(leadingWhitespace);
                     insertText.appendText(item);
@@ -138,7 +171,7 @@ export class PythonHandler extends FixCompletionItem {
 }
 
 
-export class CppHandler extends FixCompletionItem{
+export class CppHandler extends FixCompletionItem {
 
     constructor(languageId: string, config: any) {
         super(languageId, config);
@@ -170,7 +203,7 @@ export class CppHandler extends FixCompletionItem{
 }
 
 
-export class JavaHandler extends FixCompletionItem{
+export class JavaHandler extends FixCompletionItem {
 
     constructor(languageId: string, config: any) {
         super(languageId, config);
