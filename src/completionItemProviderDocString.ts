@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-export class DocstringCompletionItemProvider implements vscode.CompletionItemProvider {
+export class CompletionItemProviderDocstring implements vscode.CompletionItemProvider {
     private languageId: string;
     private config;
 

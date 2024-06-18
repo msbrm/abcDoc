@@ -5,7 +5,7 @@ docTriggerCharacters: "'"
 head:
 - '"""'
 - 'FileName:    ${FileName}'
-- 'Description: ${1:Description}'
+- 'Description: ${Description}'
 - 'Author:      ${Git.UserName} ${Git.Email}'
 - 'CreateTime:  ${CreateTime}'
 - '"""'

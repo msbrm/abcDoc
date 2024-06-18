@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
 import { YamlConfigManager } from './yamlConfigManager';
-import { DocstringCompletionItemProvider } from './docstringCompletionItemProvider';
-import { HeadstringCompletionItemProvider } from './headStringCompletionItemProvider';
+import { CompletionItemProviderDocstring } from './completionItemProviderDocString';
+import { CompletionItemProviderHeadstring } from './completionItemProviderHeadString';
 
 class Provider {
     public readonly languageId: string;
@@ -30,7 +30,7 @@ class Provider {
         if ('headTriggerCharacters' in config) {
             let providerHead = vscode.languages.registerCompletionItemProvider(
                 { scheme: 'file', language: this.languageId },
-                new HeadstringCompletionItemProvider(this.languageId, config.head),
+                new CompletionItemProviderHeadstring(config.head),
                 config.headTriggerCharacters
             );
             providerList.push(providerHead);
@@ -39,7 +39,7 @@ class Provider {
         if ('docTriggerCharacters' in config) {
             let providerDoc = vscode.languages.registerCompletionItemProvider(
                 { scheme: 'file', language: this.languageId },
-                new DocstringCompletionItemProvider(this.languageId, config),
+                new CompletionItemProviderDocstring(this.languageId, config),
                 config.docTriggerCharacters
             );
             providerList.push(providerDoc);
