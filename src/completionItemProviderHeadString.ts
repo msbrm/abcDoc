@@ -1,22 +1,23 @@
 import * as vscode from 'vscode';
-import * as cp from 'child_process';
+
+import { getGitConfigValueSync } from './tools/getGitConfigValueSync';
 
 export class CompletionItemProviderHeadstring implements vscode.CompletionItemProvider {
     private languageId: string;
     private insertText: string[];
+    private headTriggerCharacters: string;
     private user: string = '';
     private email: string = '';
 
-    constructor(languageId: string, insertText: string[]) {
+    constructor(languageId: string, config: any) {
         this.languageId = languageId;
-        this.insertText = insertText;
+        this.insertText = config.head;
+        this.headTriggerCharacters = config.headTriggerCharacters;
         this.insertText.forEach(item => {
             if (item.includes('${Git.UserName}')) {
                 try {
-                    // throw new Error("Git.UserName");
                     this.user = getGitConfigValueSync('user.name');
                 } catch (error) {
-                    console.error('Failed to get Git user information:', error);
                     vscode.window.showErrorMessage(
                         'Failed to get Git user information by `git config --get user.name`.'
                     );
@@ -25,10 +26,8 @@ export class CompletionItemProviderHeadstring implements vscode.CompletionItemPr
 
             if (item.includes('${Git.Email}')) {
                 try {
-                    // throw new Error("Git.Email");
                     this.email = getGitConfigValueSync('user.email');
                 } catch (error) {
-                    console.error('Failed to get Git user information:', error);
                     vscode.window.showErrorMessage(
                         'Failed to get Git user information by `git config --get user.email`.'
                     );
@@ -43,7 +42,6 @@ export class CompletionItemProviderHeadstring implements vscode.CompletionItemPr
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
-        console.debug('head');
         if (position.line === 0 && position.character === 4 && document.lineAt(position).text === 'head') {
             const editor = vscode.window.activeTextEditor;
             if (!editor) {
@@ -107,12 +105,3 @@ export class CompletionItemProviderHeadstring implements vscode.CompletionItemPr
     }
 }
 
-function getGitConfigValueSync(configKey: string): string {
-    try {
-        const stdout = cp.execSync(`git config --get ${configKey}`).toString().trim();
-        return stdout;
-    } catch (error) {
-        console.error('Failed to get Git config:', error);
-        throw new Error(`Failed to get Git config for ${configKey}`);
-    }
-}

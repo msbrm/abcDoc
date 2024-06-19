@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { YamlConfigManager } from './yamlConfigManager';
+import { YamlConfigManager } from './tools/yamlConfigManager';
 import { CompletionItemProviderDocstring } from './completionItemProviderDocString';
 import { CompletionItemProviderHeadstring } from './completionItemProviderHeadString';
 
@@ -10,11 +10,10 @@ class Provider {
 
     constructor(
         languageId: string,
-        context: vscode.ExtensionContext,
+        extensionPath: string,
         configPath?: string
     ) {
         this.languageId = languageId;
-        const extensionPath = context.extensionPath;
         const pathToLoad = configPath || `${extensionPath}/src/config/template/${languageId}.yaml`;
         this.yamlConfigManager = new YamlConfigManager(pathToLoad);
     }
@@ -27,20 +26,20 @@ class Provider {
         let config = this.yamlConfigManager.readConfig(configPath);
         let providerList = [];
 
-        if ('headTriggerCharacters' in config) {
+        if ('head' in config) {
             let providerHead = vscode.languages.registerCompletionItemProvider(
                 { scheme: 'file', language: this.languageId },
-                new CompletionItemProviderHeadstring(this.languageId, config.head),
-                config.headTriggerCharacters
+                new CompletionItemProviderHeadstring(this.languageId, config),
+                'd'
             );
             providerList.push(providerHead);
         }
 
-        if ('docTriggerCharacters' in config) {
+        if (config.doc) {
             let providerDoc = vscode.languages.registerCompletionItemProvider(
                 { scheme: 'file', language: this.languageId },
                 new CompletionItemProviderDocstring(this.languageId, config),
-                config.docTriggerCharacters
+                'c'
             );
             providerList.push(providerDoc);
         }

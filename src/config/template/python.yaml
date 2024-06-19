@@ -1,6 +1,8 @@
-headTriggerCharacters: 'd'
+# headTriggerCharacters: 'd'
 
-docTriggerCharacters: "'"
+# docTriggerCharacters: 'c'
+
+doc: true
 
 head:
 - '"""'
@@ -10,11 +12,13 @@ head:
 - 'CreateTime:  ${CreateTime}'
 - '"""'
 
-class:
-  style: numpy
+indentation: '    '
 
-def:
-  style: numpy
+# class:
+#   style: numpy
+
+# def:
+#   style: numpy
 
 # class:
 # - '"""'

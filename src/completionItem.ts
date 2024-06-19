@@ -2,42 +2,8 @@ import * as vscode from 'vscode';
 import Parser from 'tree-sitter';
 import TreeSitterPython from 'tree-sitter-python';
 
-
-function lineValidation(
-    line: string, bracketStack: string[], strFlag: string
-): { needNextLine: boolean, bracketStack: string[], strFlag: string } {
-    let needNextLine: boolean = false;
-    for (let char of line) {
-        if (strFlag) {
-            if (char === strFlag) {
-                strFlag = '';
-            } else {
-                continue;
-            }
-        } else {
-            if ('([{'.includes(char)) {
-                bracketStack.push(char);
-            }
-            if (')]}'.includes(char)) {
-                bracketStack.pop();
-            }
-            if (char === "'" || char === '"') {
-                strFlag = char;
-            }
-        }
-    }
-    if (strFlag || bracketStack.length > 0) {
-        needNextLine = true;
-    }
-    return { needNextLine, bracketStack, strFlag };
-}
-
-
-function getLeadingWhitespace(line: string): string {
-    const whitespaceRegex = /^[\s\t]*/;
-    const match = line.match(whitespaceRegex);
-    return match ? match[0] : '';
-}
+import { lineValidation, getLeadingWhitespace } from './tools/lineAnalysis';
+import { pythonGenerateClassDocstring } from './genDocstring/pythonDocstring';
 
 
 export abstract class FixCompletionItem {
@@ -58,7 +24,6 @@ export abstract class FixCompletionItem {
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>>;
 }
 
-
 export class PythonHandler extends FixCompletionItem {
     private parser;
 
@@ -66,7 +31,6 @@ export class PythonHandler extends FixCompletionItem {
         super(languageId, config);
         this.parser = new Parser();
         this.parser.setLanguage(TreeSitterPython);
-
     }
 
     getCompletionItem(
@@ -75,10 +39,10 @@ export class PythonHandler extends FixCompletionItem {
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
-        const activateLine = document.lineAt(position).text;
-        const linePrefixTrim = activateLine.substring(0, position.character).trim();
+        const activateLine = document.lineAt(position).text.trim();
         console.debug(position.character);
-        if (linePrefixTrim.endsWith(this.config.docTriggerCharacters.repeat(3))) {
+        console.log(`|${activateLine}|`);
+        if (activateLine === 'docc') {
             const previousLine = document.lineAt(position.line - 1).text;
             const leadingWhitespace = getLeadingWhitespace(previousLine);
             const leadingWhitespaceLength = leadingWhitespace.length;
@@ -86,8 +50,11 @@ export class PythonHandler extends FixCompletionItem {
             // python class
             if (previousLine.trim().startsWith('class')) {
                 const completionItem = new vscode.CompletionItem(`abc-class: ${this.languageId}`, vscode.CompletionItemKind.Snippet);
-                const insertConfig = this.config.class;
-                let insertText = new vscode.SnippetString();
+
+                const editor = vscode.window.activeTextEditor;
+                if (!editor) {
+                    return [];
+                }
 
                 let lineIdx = position.line;
                 let needNextLine: boolean = false;
@@ -123,31 +90,21 @@ export class PythonHandler extends FixCompletionItem {
                     }
                 }
 
-                let classProperties: { name: string, type: string }[] = [];
                 const tree = this.parser.parse(tmpCodeBlock.join('\n'));
                 const node = tree.rootNode.child(0);
-                console.log(node);
-                node?.children.forEach((classBodyChildNode) => {
-                    if (classBodyChildNode.type === 'class_element') {
-                        if (classBodyChildNode.firstChild?.type === 'property_declaration') {
-                            const propertyDeclarationNode = classBodyChildNode.firstChild;
-                            if (propertyDeclarationNode?.type === 'property_declaration') {
-                                const identifierNode = propertyDeclarationNode.childNamed('identifier');
-                                const propertyName = identifierNode ? identifierNode.text : '';
-                                const propertyTypeNode = propertyDeclarationNode.nextSibling;
-                                const propertyType = propertyTypeNode ? propertyTypeNode.text.trim() : '';
-                                classProperties.push({ name: propertyName, type: propertyType });
-                            }
-                        }
-                    }
-                });
-
-                for (const item of insertConfig) {
-                    // insertText.appendText(leadingWhitespace);
-                    insertText.appendText(item);
-                    insertText.appendText(`\n`);
+                if (node) {
+                    const docstr = pythonGenerateClassDocstring(leadingWhitespace, this.config.indentation, node);
+                    console.log(docstr);
+                    completionItem.insertText = docstr;
+                } else {
+                    return [];
                 }
-                completionItem.insertText = insertText;
+
+                // const lineRange = document.lineAt(position.line).range;
+                // editor.edit(editBuilder => {
+                //     editBuilder.replace(lineRange, '');
+                // });
+
                 return [completionItem];
             }
 
@@ -183,9 +140,7 @@ export class CppHandler extends FixCompletionItem {
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
-        console.log(this.config);
         const linePrefix = document.lineAt(position).text.substring(0, position.character);
-        console.log(position.character);
         if (linePrefix.endsWith("'''")) {
             const completionItem = new vscode.CompletionItem(`abc-doc: ${this.languageId}`, vscode.CompletionItemKind.Snippet);
             completionItem.insertText = new vscode.SnippetString(
@@ -215,9 +170,7 @@ export class JavaHandler extends FixCompletionItem {
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
-        console.log(this.config);
         const linePrefix = document.lineAt(position).text.substring(0, position.character);
-        console.log(position.character);
         if (linePrefix.endsWith("'''")) {
             const completionItem = new vscode.CompletionItem(`abc-doc: ${this.languageId}`, vscode.CompletionItemKind.Snippet);
             completionItem.insertText = new vscode.SnippetString(

@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// based on the result of the `getLanguageSettings` method
 	// obtain the auto-completion listener and register it
     for (const language of getLanguageSettings()) {
-		let provider = new Provider(language, context);
+		let provider = new Provider(language, context.extensionPath);
 		for(const i of provider.getProvider()) {
 			context.subscriptions.push(i);
 		}
