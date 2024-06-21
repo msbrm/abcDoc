@@ -97,6 +97,7 @@
   "dependencies": {
     "js-yaml": "^4.1.0",
     "tree-sitter": "^0.21.1",
-    "tree-sitter-python": "^0.21.0"
+    "tree-sitter-python": "^0.21.0",
+    "vscode-languageclient": "^9.0.1"
   }
 }
