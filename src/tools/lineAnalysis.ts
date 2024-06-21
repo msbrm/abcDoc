@@ -1,6 +1,6 @@
 export function lineValidation(
-    line: string, bracketStack: string[], strFlag: string
-): { needNextLine: boolean, bracketStack: string[], strFlag: string } {
+    line: string, bracketCount: number, strFlag: string
+): { needNextLine: boolean, bracketCount: number, strFlag: string } {
     let needNextLine: boolean = false;
     for (let char of line) {
         if (strFlag) {
@@ -11,24 +11,30 @@ export function lineValidation(
             }
         } else {
             if ('([{'.includes(char)) {
-                bracketStack.push(char);
+                bracketCount += 1;
             }
             if (')]}'.includes(char)) {
-                bracketStack.pop();
+                bracketCount -= 1;
             }
             if (char === "'" || char === '"') {
                 strFlag = char;
             }
         }
     }
-    if (strFlag || bracketStack.length > 0) {
+    if (strFlag || bracketCount !== 0) {
         needNextLine = true;
     }
-    return { needNextLine, bracketStack, strFlag };
+    return { needNextLine, bracketCount, strFlag };
 }
+
 
 export function getLeadingWhitespace(line: string): string {
     const whitespaceRegex = /^[\s\t]*/;
     const match = line.match(whitespaceRegex);
     return match ? match[0] : '';
+}
+
+
+export function reverseString(str: string): string {
+    return str.split('').reverse().join('');
 }

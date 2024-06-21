@@ -31,7 +31,10 @@ export class CompletionItemProviderDocstring implements vscode.CompletionItemPro
         context: vscode.CompletionContext
     ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
         if (this.fixCompletionItem) {
-            return this.fixCompletionItem.getCompletionItem(document, position, token, context);
+            console.log(`11111111111111111111${context.triggerCharacter}`);
+            const docCompletionItem = this.fixCompletionItem.getCompletionItem(document, position, token, context);
+            console.log(docCompletionItem);
+            return docCompletionItem;
         }
         return [];
     }

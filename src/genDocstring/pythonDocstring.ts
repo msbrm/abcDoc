@@ -3,26 +3,25 @@ import Parser from 'tree-sitter';
 
 export function pythonGenerateClassDocstring(ws: string, indentation: string, clsNode: Parser.SyntaxNode): vscode.SnippetString {
     const wsIindentation = ws + indentation;
-    console.log(`ws: |${ws}|, indentation: |${indentation}|, wsIindentation: |${wsIindentation}|`);
     const details = extractClassDetails(clsNode);
 
     let insertText = new vscode.SnippetString();
-    insertText.appendText(`${ws}"""`);
+    insertText.appendText(`${wsIindentation}"""`);
     insertText.appendPlaceholder(details.name);
-    insertText.appendText(`\n\n`);
-    insertText.appendPlaceholder(`${ws}description`);
+    insertText.appendText(`\n\n${wsIindentation}`);
+    insertText.appendPlaceholder(`description`);
     insertText.appendText(`\n`);
 
     if (details.attributes.length > 0) {
-        insertText.appendText(`\n${ws}Attributes\n----------\n`);
+        insertText.appendText(`\n${wsIindentation}Attributes\n${wsIindentation}----------\n`);
         details.attributes.forEach((attr: any) => {
-            insertText.appendText(`${ws}${attr.name} : `);
+            insertText.appendText(`${wsIindentation}${attr.name} : `);
             if (attr.type) {
                 insertText.appendText(attr.type);
             } else {
                 insertText.appendPlaceholder(`type of ${attr.name}`);
             }
-            insertText.appendText(`\n${indentation}`);
+            insertText.appendText(`\n${wsIindentation}${indentation}`);
             insertText.appendPlaceholder(`description of ${attr.name}`);
             insertText.appendText(`\n`);
         });
@@ -31,15 +30,15 @@ export function pythonGenerateClassDocstring(ws: string, indentation: string, cl
     if (details.methods.length > 0) {
         for (const constructorMethod of details.methods) {
             if (constructorMethod.name === '__init__' && constructorMethod.parametersList.length > 0) {
-                insertText.appendText(`\n${ws}Constructor Parameters\n----------------------\n`);
+                insertText.appendText(`\n${wsIindentation}Constructor Parameters\n${wsIindentation}----------------------\n`);
                 constructorMethod.parametersList.forEach((element: any) => {
-                    insertText.appendText(`${ws}${element.name} : `);
+                    insertText.appendText(`${wsIindentation}${element.name} : `);
                     if (element.type) {
                         insertText.appendText(element.type);
                     } else {
                         insertText.appendPlaceholder(`type of ${element.name}`);
                     }
-                    insertText.appendText(`\n${indentation}`);
+                    insertText.appendText(`\n${wsIindentation}${indentation}`);
                     insertText.appendPlaceholder(`description of ${element.name}`);
                     insertText.appendText(`\n`);
                 });
@@ -48,37 +47,57 @@ export function pythonGenerateClassDocstring(ws: string, indentation: string, cl
         }
     }
 
-    insertText.appendText(`${ws}"""\n`);
+    insertText.appendText(`\n${wsIindentation}"""\n`);
+
+    return insertText;
+}
+
+export function pythonGenerateDefDocstring(ws: string, indentation: string, funcNode: Parser.SyntaxNode): vscode.SnippetString {
+    const wsIindentation = ws + indentation;
+    const details = extractMethodDetails(funcNode);
+
+    let insertText = new vscode.SnippetString();
+    insertText.appendText(`${wsIindentation}"""`);
+    insertText.appendPlaceholder(details.name);
+    insertText.appendText(`\n\n${wsIindentation}`);
+    insertText.appendPlaceholder('description');
+    insertText.appendText(`\n`);
+
+    if (details.parametersList.length > 0) {
+        insertText.appendText(`\n${wsIindentation}Parameters\n${wsIindentation}----------\n`);
+        details.parametersList.forEach((element: any) => {
+            insertText.appendText(`${wsIindentation}${element.name} : `);
+            if (element.type) {
+                insertText.appendText(element.type);
+            } else {
+                insertText.appendPlaceholder(`type of ${element.name}`);
+            }
+            insertText.appendText(`\n${wsIindentation}${indentation}`);
+            insertText.appendPlaceholder(`description of ${element.name}`);
+            insertText.appendText(`\n`);
+        });
+    }
+
+    insertText.appendText(`\n${wsIindentation}Returns\n${wsIindentation}-------\n`);
+    if (details.returnType) {
+        insertText.appendText(`${wsIindentation}${details.returnType}`);
+    } else {
+        insertText.appendText(`${wsIindentation}`);
+        insertText.appendPlaceholder('None');
+    }
+    insertText.appendText(`\n${wsIindentation}${indentation}`);
+    insertText.appendPlaceholder('description of return');
+
+    insertText.appendText(`\n\n${wsIindentation}"""\n`);
 
     return insertText;
 }
 
 function extractClassDetails(clsNode: Parser.SyntaxNode): any {
-    console.log('--------------------------------------------------------');
-    console.log(clsNode);
-    console.log('--------------------------------------------------------');
-
     const details: any = {};
 
     const nameNode = clsNode.childForFieldName('name');
     details.name = nameNode ? nameNode.text : '';
-
-
-    // details.superclasses = [];
-    // const superClassesNode = clsNode.childForFieldName('superclasses');
-    // if (superClassesNode) {
-    //     superClassesNode.namedChildren.forEach((child: Parser.SyntaxNode) => {
-    //         details.superclasses.push(child.text);
-    //     });
-    // }
-
-    // details.decorators = [];
-    // const decoratorsNode = clsNode.childForFieldName('decorators');
-    // if (decoratorsNode) {
-    //     decoratorsNode.namedChildren.forEach((child: Parser.SyntaxNode) => {
-    //         details.decorators.push(child.text);
-    //     });
-    // }
 
     details.methods = [];
     details.attributes = [];
@@ -132,7 +151,7 @@ function extractMethodDetails(funcNode: Parser.SyntaxNode): any {
     }
 
     const returnNode = funcNode.childForFieldName('return_type');
-    details.returnType = returnNode ? returnNode.text : 'None';
+    details.returnType = returnNode ? returnNode.text : '';
 
     return details;
 }

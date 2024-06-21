@@ -39,7 +39,7 @@ class Provider {
             let providerDoc = vscode.languages.registerCompletionItemProvider(
                 { scheme: 'file', language: this.languageId },
                 new CompletionItemProviderDocstring(this.languageId, config),
-                'c'
+                's'
             );
             providerList.push(providerDoc);
         }
