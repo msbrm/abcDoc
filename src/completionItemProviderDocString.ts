@@ -29,7 +29,7 @@ export class CompletionItemProviderDocstring implements vscode.CompletionItemPro
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
-    ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
+    ): vscode.ProviderResult<vscode.CompletionItem[]> {
         if (this.fixCompletionItem) {
             return this.fixCompletionItem.getCompletionItem(document, position, token, context);
         }

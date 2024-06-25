@@ -2,7 +2,7 @@
   "name": "abc-doc",
   "displayName": "abcDoc",
   "description": "Convenient to add code documentation.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "msbrm",
   "engines": {
     "vscode": "^1.89.0"
@@ -10,26 +10,46 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "*"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
       "type": "object",
       "title": "Language Settings",
       "properties": {
-        "abcDoc.languageSettings.python": {
+        "abcDoc.languageSettings.python.enable": {
           "type": "boolean",
           "default": true,
           "description": "Enable for Python"
         },
-        "abcDoc.languageSettings.java": {
+        "abcDoc.languageSettings.python.head": {
+          "type": "array",
+          "default": [
+            "\"\"\"",
+            "FileName:    ${FileName}",
+            "Description: ${Description}",
+            "Author:      ${Git.UserName} ${Git.Email}",
+            "CreateTime:  ${CreateTime}",
+            "\"\"\""
+          ],
+          "description": "Header template for Python files"
+        },
+        "abcDoc.languageSettings.python.docs": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable documentation generation"
+        },
+        "abcDoc.languageSettings.python.indentation": {
+          "type": "string",
+          "default": "    ",
+          "description": "Indentation style"
+        },
+        "abcDoc.languageSettings.java.enable": {
           "type": "boolean",
           "default": false,
           "description": "Enable for Java"
         },
-        "abcDoc.languageSettings.cpp": {
+        "abcDoc.languageSettings.cpp.enable": {
           "type": "boolean",
           "default": false,
           "description": "Enable for C++"
@@ -84,22 +104,17 @@
     "lint": "eslint src --ext ts",
     "test": "vscode-test"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/msbrm/abcDoc.git"
+  },
   "devDependencies": {
-    "@types/js-yaml": "^4.0.5",
-    "@types/mocha": "^10.0.6",
-    "@types/node": "18.x",
-    "@types/vscode": "^1.89.0",
-    "@typescript-eslint/eslint-plugin": "^7.11.0",
-    "@typescript-eslint/parser": "^7.11.0",
-    "@vscode/test-cli": "^0.0.9",
-    "@vscode/test-electron": "^2.4.0",
-    "eslint": "^8.57.0",
-    "typescript": "^5.4.5"
+    "@types/node": "^20.14.8",
+    "@types/vscode": "^1.90.0"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0",
+    "vscode": "^1.1.37",
     "tree-sitter": "^0.21.1",
-    "tree-sitter-python": "^0.21.0",
-    "vscode-languageclient": "^9.0.1"
+    "tree-sitter-python": "^0.21.0"
   }
 }

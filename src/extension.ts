@@ -5,15 +5,16 @@ import { Provider } from './completion';
 // to see which languages have document template auto-completion enabled
 // Return the list of enabled languages.
 function getLanguageSettings() {
-	let enabledLanguages: string[] = [];
-	const configuration = vscode.workspace.getConfiguration('abcDoc.languageSettings');
-	const languageSettings = configuration as any;
+	let enabledLanguages: { [key: string]: any } = {};
 
-    for (const language in languageSettings) {
-        if (typeof languageSettings[language] === 'boolean' && languageSettings[language]) {
-            enabledLanguages.push(language);
-        }
-    }
+	let pythonSettings = vscode.workspace.getConfiguration('abcDoc.languageSettings.python');
+	if (pythonSettings && pythonSettings.enable) {
+		enabledLanguages['python'] = {
+			'head': pythonSettings.head,
+			'docs': pythonSettings.docs,
+			'indentation': pythonSettings.indentation
+		};
+	}
 
 	return enabledLanguages;
 }
@@ -24,8 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// Instantiate a `Provider` object for each programming language
 	// based on the result of the `getLanguageSettings` method
 	// obtain the auto-completion listener and register it
-    for (const language of getLanguageSettings()) {
-		let provider = new Provider(language, context.extensionPath);
+    for (let [key, value] of Object.entries(getLanguageSettings())) {
+		let provider = new Provider(key, value);
 		for(const i of provider.getProvider()) {
 			context.subscriptions.push(i);
 		}

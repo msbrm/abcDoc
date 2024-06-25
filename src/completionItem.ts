@@ -30,7 +30,7 @@ export abstract class FixCompletionItem {
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
-    ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>>;
+    ): vscode.ProviderResult<vscode.CompletionItem[]>;
 }
 
 export class PythonHandler extends FixCompletionItem {
@@ -47,7 +47,7 @@ export class PythonHandler extends FixCompletionItem {
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
-    ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
+    ): vscode.ProviderResult<vscode.CompletionItem[]> {
         const activateLine = document.lineAt(position).text.trim();
         if (activateLine === 'docs') {
             let headLineIdx = position.line - 1;
@@ -156,7 +156,7 @@ export class CppHandler extends FixCompletionItem {
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
-    ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
+    ): vscode.ProviderResult<vscode.CompletionItem[]> {
         const linePrefix = document.lineAt(position).text.substring(0, position.character);
         if (linePrefix.endsWith("'''")) {
             const completionItem = new vscode.CompletionItem(`abc-doc: ${this.languageId}`, vscode.CompletionItemKind.Snippet);
@@ -186,7 +186,7 @@ export class JavaHandler extends FixCompletionItem {
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
-    ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
+    ): vscode.ProviderResult<vscode.CompletionItem[]> {
         const linePrefix = document.lineAt(position).text.substring(0, position.character);
         if (linePrefix.endsWith("'''")) {
             const completionItem = new vscode.CompletionItem(`abc-doc: ${this.languageId}`, vscode.CompletionItemKind.Snippet);

@@ -5,14 +5,12 @@ import { getGitConfigValueSync } from './tools/getGitConfigValueSync';
 export class CompletionItemProviderHeadstring implements vscode.CompletionItemProvider {
     private languageId: string;
     private insertText: string[];
-    private headTriggerCharacters: string;
     private user: string = '';
     private email: string = '';
 
     constructor(languageId: string, config: any) {
         this.languageId = languageId;
         this.insertText = config.head;
-        this.headTriggerCharacters = config.headTriggerCharacters;
         this.insertText.forEach(item => {
             if (item.includes('${Git.UserName}')) {
                 try {
@@ -41,7 +39,7 @@ export class CompletionItemProviderHeadstring implements vscode.CompletionItemPr
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
-    ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
+    ): vscode.ProviderResult<vscode.CompletionItem[]> {
         if (position.line === 0 && position.character === 4 && document.lineAt(position).text === 'head') {
             const editor = vscode.window.activeTextEditor;
             if (!editor) {
